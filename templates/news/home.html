@@ -1,1 +1,18 @@
-{% extends 'base.html' %}{% block content %}{% if breaking %}<div class="ticker"><div class="container"><b>ब्रेकिंग</b><div>{% for a in breaking %}<a href="{{ a.get_absolute_url }}">{{ a.title }}</a>{% endfor %}</div></div></div>{% endif %}<main class="container"><section class="hero">{% if featured %}<a href="{{ featured.get_absolute_url }}" class="lead" style="background-image:linear-gradient(0deg,rgba(5,15,30,.9),transparent 70%),url('{{ featured.display_image }}')"><div><span>{{ featured.category.name }}</span><h1>{{ featured.title }}</h1><p>{{ featured.summary }}</p></div></a>{% endif %}<aside><div class="weather"><strong>चंदौली</strong><div>32° <small>साफ मौसम</small></div></div><div class="ad">विज्ञापन स्थान<br><small>यहाँ अपना विज्ञापन दें</small></div></aside></section><div class="section-head"><h2>ताज़ा खबरें</h2><a href="{% url 'search' %}">सभी खबरें →</a></div><section class="grid">{% for a in latest %}{% include 'news/_card.html' %}{% empty %}<p>डेमो खबरों के लिए <code>python manage.py seed_demo</code> चलाएँ।</p>{% endfor %}</section></main>{% endblock %}
+{% extends 'base.html' %}
+{% load advertisement_tags %}
+{% block content %}
+{% if breaking %}
+<div class="ticker"><div class="container"><b>ब्रेकिंग</b><div>{% for a in breaking %}<a href="{{ a.get_absolute_url }}">{{ a.title }}</a>{% endfor %}</div></div></div>
+{% endif %}
+<main class="container">
+  <section class="hero">
+    {% if featured %}<a href="{{ featured.get_absolute_url }}" class="lead" style="background-image:linear-gradient(0deg,rgba(5,15,30,.9),transparent 70%),url('{{ featured.display_image }}')"><div><span>{{ featured.category.name }}</span><h1>{{ featured.title }}</h1><p>{{ featured.summary }}</p></div></a>{% endif %}
+    <aside>
+      <div class="weather"><strong>चंदौली</strong><div>32° <small>साफ मौसम</small></div></div>
+      {% show_ad 'home_sidebar' 'sidebar' %}
+    </aside>
+  </section>
+  <div class="section-head"><h2>ताज़ा खबरें</h2><a href="{% url 'search' %}">सभी खबरें →</a></div>
+  <section class="grid">{% for a in latest %}{% include 'news/_card.html' %}{% empty %}<p>डेमो खबरों के लिए <code>python manage.py seed_demo</code> चलाएँ।</p>{% endfor %}</section>
+</main>
+{% endblock %}

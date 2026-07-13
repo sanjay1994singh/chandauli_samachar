@@ -4,6 +4,7 @@ from django.utils.text import slugify
 from category.models import Category
 from state_city.models import State, City
 from news.models import Article
+from advertisements.models import Advertisement
 class Command(BaseCommand):
     help = "Create polished demo content"
     def handle(self, *args, **kwargs):
@@ -21,4 +22,5 @@ class Command(BaseCommand):
         for i,(title,cat,city,summary,img) in enumerate(rows):
             slug = f"demo-news-{i+1}"
             Article.objects.update_or_create(slug=slug, defaults={"title":title,"summary":summary,"content":summary+"\n\nकार्यक्रम में स्थानीय नागरिकों, अधिकारियों और जनप्रतिनिधियों ने भाग लिया। संबंधित विभाग ने कहा कि योजनाओं का लाभ अंतिम व्यक्ति तक पहुंचाना प्राथमिकता है।\n\nचंदौली समाचार इस खबर से जुड़े हर नए अपडेट को आप तक पहुंचाता रहेगा।","category":cats[cat],"state":state,"city":cities[city],"status":"published","published_at":timezone.now(),"image_url":img,"is_featured":i==0,"is_breaking":i in (0,1)})
-        self.stdout.write(self.style.SUCCESS("Demo categories, locations and articles created."))
+        Advertisement.objects.update_or_create(name="The Up Media Services - News Portal", defaults={"advertiser":"The Up Media Services", "headline":"अपना न्यूज़ पोर्टल बनवाएं", "subheadline":"24 घंटे में गूगल पर होगा रैंक", "contact":"8279408396", "whatsapp":"6397712918", "cta_text":"Call Now", "placement":"home_sidebar", "style":"creative", "priority":100, "is_active":True})
+        self.stdout.write(self.style.SUCCESS("Demo categories, locations, articles and advertisement created."))
