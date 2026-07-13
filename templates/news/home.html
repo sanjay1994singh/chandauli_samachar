@@ -1,14 +1,23 @@
 {% extends 'base.html' %}
 {% load advertisement_tags static %}
 {% block content %}
-<link rel="stylesheet" href="{% static 'css/responsive-ads.css' %}?v=20260713-2">
+<style>
+  .hero{display:grid!important;grid-template-columns:minmax(0,1fr) 340px!important;gap:24px!important;align-items:stretch}
+  .hero>.hero-sidebar{display:grid!important;grid-template-columns:minmax(0,1fr)!important;grid-template-rows:minmax(0,1fr) auto!important;gap:20px!important;min-width:0!important;width:340px!important;max-width:340px!important}
+  .hero-sidebar .ad-slot-link{display:block!important;width:100%!important;max-width:340px!important;min-width:0!important;overflow:hidden!important;border-radius:14px!important}
+  .hero-sidebar .ad-slot{position:relative!important;display:block!important;width:100%!important;max-width:340px!important;height:auto!important;min-width:0!important;min-height:0!important;aspect-ratio:1/1!important;padding:0!important;overflow:hidden!important;border-radius:14px!important}
+  .hero-sidebar .ad-slot__image{position:absolute!important;inset:0!important;display:block!important;width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;object-fit:cover!important;object-position:center!important}
+  .hero-sidebar .ad-slot__badge{position:absolute!important;z-index:3!important;top:8px!important;right:8px!important;padding:4px 6px!important;border-radius:3px!important;background:rgba(0,0,0,.62)!important;color:#fff!important;font:700 8px/1 Arial,sans-serif!important}
+  @media(max-width:1050px){.hero{grid-template-columns:minmax(0,1fr)!important}.hero>.hero-sidebar{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;grid-template-rows:auto!important;width:100%!important;max-width:none!important}.hero-sidebar .ad-slot-link,.hero-sidebar .ad-slot{width:100%!important;max-width:none!important;height:100%!important}}
+  @media(max-width:600px){.hero>.hero-sidebar{grid-template-columns:minmax(0,1fr)!important}.hero-sidebar .ad-slot-link{max-width:360px!important;margin:0 auto!important}.hero-sidebar .ad-slot{max-width:360px!important;height:auto!important}.lead{min-height:360px!important}}
+</style>
 {% if breaking %}
 <div class="ticker"><div class="container"><b>ब्रेकिंग</b><div>{% for a in breaking %}<a href="{{ a.get_absolute_url }}">{{ a.title }}</a>{% endfor %}</div></div></div>
 {% endif %}
 <main class="container">
   <section class="hero">
     {% if featured %}<a href="{{ featured.get_absolute_url }}" class="lead" style="background-image:linear-gradient(0deg,rgba(5,15,30,.9),transparent 70%),url('{{ featured.display_image }}')"><div><span>{{ featured.category.name }}</span><h1>{{ featured.title }}</h1><p>{{ featured.summary }}</p></div></a>{% endif %}
-    <aside>
+    <aside class="hero-sidebar">
       <div class="weather"><strong>चंदौली</strong><div>32° <small>साफ मौसम</small></div></div>
       {% show_ad 'home_sidebar' 'sidebar' %}
     </aside>
