@@ -10,7 +10,7 @@ ALLOWED_HOSTS = [x.strip() for x in os.getenv("ALLOWED_HOSTS", "localhost").spli
 INSTALLED_APPS = [
     "django.contrib.admin", "django.contrib.auth", "django.contrib.contenttypes",
     "django.contrib.sessions", "django.contrib.messages", "django.contrib.staticfiles",
-    "accounts", "category", "state_city", "news", "advertisements",
+    "accounts", "category", "state_city", "news", "advertisements", "pages",
 ]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware", "django.contrib.sessions.middleware.SessionMiddleware",
@@ -26,7 +26,7 @@ if os.getenv("DB_ENGINE", "mysql") == "sqlite":
 else:
     DATABASES = {"default": {"ENGINE": "django.db.backends.mysql", "NAME": os.getenv("DB_NAME"), "USER": os.getenv("DB_USER"), "PASSWORD": os.getenv("DB_PASSWORD"), "HOST": os.getenv("DB_HOST", "127.0.0.1"), "PORT": os.getenv("DB_PORT", "3306"), "OPTIONS": {"charset": "utf8mb4"}}}
 AUTH_PASSWORD_VALIDATORS = []
-LANGUAGE_CODE, TIME_ZONE, USE_I18N, USE_TZ = "en", "Asia/Kolkata", True, True
+LANGUAGE_CODE, TIME_ZONE, USE_I18N, USE_TZ = "hi", "Asia/Kolkata", True, True
 STATIC_URL, STATIC_ROOT, STATICFILES_DIRS = "static/", BASE_DIR / "staticfiles", [BASE_DIR / "static"]
 MEDIA_URL, MEDIA_ROOT = "media/", BASE_DIR / "media"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

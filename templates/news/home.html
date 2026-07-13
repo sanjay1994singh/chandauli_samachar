@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
-{% load advertisement_tags %}
+{% load advertisement_tags static %}
 {% block content %}
+<link rel="stylesheet" href="{% static 'css/responsive-ads.css' %}?v=20260713-2">
 {% if breaking %}
 <div class="ticker"><div class="container"><b>ब्रेकिंग</b><div>{% for a in breaking %}<a href="{{ a.get_absolute_url }}">{{ a.title }}</a>{% endfor %}</div></div></div>
 {% endif %}
