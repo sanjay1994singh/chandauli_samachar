@@ -1,0 +1,1 @@
+{% extends 'base.html' %}{% block title %}{{ heading }} | चंदौली समाचार{% endblock %}{% block content %}<main class="container page"><div class="section-head"><h1>{{ heading }}</h1></div><section class="grid">{% for a in articles %}{% include 'news/_card.html' %}{% empty %}<div class="empty">कोई खबर नहीं मिली।</div>{% endfor %}</section></main>{% endblock %}
