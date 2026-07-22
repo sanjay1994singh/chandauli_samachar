@@ -1,11 +1,12 @@
 from django.db import models
 
+from chandauli_samachar.fields import CompleteUnicodeSlugField
 from chandauli_samachar.slugs import unique_slug
 
 
 class State(models.Model):
     name = models.CharField(max_length=100, unique=True)
-    slug = models.SlugField(
+    slug = CompleteUnicodeSlugField(
         unique=True, blank=True, allow_unicode=True,
         help_text="Automatically generated from the Hindi or English name.",
     )
@@ -19,7 +20,7 @@ class State(models.Model):
 class City(models.Model):
     state = models.ForeignKey(State, related_name="cities", on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
-    slug = models.SlugField(
+    slug = CompleteUnicodeSlugField(
         blank=True, allow_unicode=True,
         help_text="Automatically generated from the Hindi or English name.",
     )

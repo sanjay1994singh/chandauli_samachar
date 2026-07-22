@@ -2,13 +2,14 @@ from django.conf import settings
 from django.db import models
 from django.urls import reverse
 
+from chandauli_samachar.fields import CompleteUnicodeSlugField
 from chandauli_samachar.slugs import unique_slug
 
 
 class Article(models.Model):
     STATUS = (("draft", "Draft"), ("published", "Published"))
     title = models.CharField("Title", max_length=250)
-    slug = models.SlugField(
+    slug = CompleteUnicodeSlugField(
         "Slug",
         max_length=270,
         unique=True,

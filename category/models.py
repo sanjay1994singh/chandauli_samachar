@@ -1,12 +1,13 @@
 from django.db import models
 from django.urls import reverse
 
+from chandauli_samachar.fields import CompleteUnicodeSlugField
 from chandauli_samachar.slugs import unique_slug
 
 
 class Category(models.Model):
     name = models.CharField("Name", max_length=100, unique=True)
-    slug = models.SlugField(
+    slug = CompleteUnicodeSlugField(
         "Slug", unique=True, blank=True, allow_unicode=True,
         help_text="Automatically generated from the Hindi or English name.",
     )

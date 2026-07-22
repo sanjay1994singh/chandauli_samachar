@@ -50,6 +50,32 @@ class AdminLanguageAndSlugTests(TestCase):
         self.assertIn('&quot;allowUnicode&quot;: true', html)
         self.assertContains(response, "/static/admin/js/unicode_slugify.js")
 
+    def test_admin_accepts_complete_hindi_slug(self):
+        self.client.force_login(self.user)
+        response = self.client.post(
+            "/admin/news/article/add/",
+            {
+                "title": "मुख्यमंत्री योगी आदित्यनाथ ने किए मां पाटेश्वरी के दर्शन",
+                "slug": "मुख्यमंत्री-योगी-आदित्यनाथ-ने-किए-मां-पाटेश्वरी-के-दर्शन",
+                "summary": "",
+                "content": "पूरी खबर",
+                "category": self.category.pk,
+                "status": "published",
+                "_save": "Save",
+            },
+        )
+
+        self.assertEqual(
+            response.status_code,
+            302,
+            response.context["adminform"].form.errors.as_json() if response.status_code == 200 else "",
+        )
+        self.assertTrue(
+            Article.objects.filter(
+                slug="मुख्यमंत्री-योगी-आदित्यनाथ-ने-किए-मां-पाटेश्वरी-के-दर्शन"
+            ).exists()
+        )
+
     def test_public_site_remains_hindi(self):
         response = self.client.get("/")
 
