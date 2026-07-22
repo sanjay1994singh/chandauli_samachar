@@ -126,7 +126,9 @@ class AdminLanguageAndSlugTests(TestCase):
         self.assertContains(response, "twitter.com/intent/tweet")
         self.assertContains(response, "t.me/share/url")
         self.assertContains(response, 'id="copy-share-link"')
-        self.assertContains(response, "/social-image/")
+        self.assertContains(response, f"/s/{article.pk}/")
+        self.assertContains(response, f"/social/article/{article.pk}.jpg")
+        self.assertEqual(response.context["share_url"], f"http://testserver/s/{article.pk}/")
 
     def test_social_thumbnail_is_always_1200_by_630_jpeg(self):
         article = Article.objects.create(
@@ -136,9 +138,24 @@ class AdminLanguageAndSlugTests(TestCase):
             category=self.category,
             status="published",
         )
-        response = self.client.get(f"{article.get_absolute_url()}social-image/")
+        response = self.client.get(f"/social/article/{article.pk}.jpg")
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "image/jpeg")
         image = Image.open(BytesIO(response.content))
         self.assertEqual(image.size, (1200, 630))
+
+    def test_short_ascii_share_url_renders_the_article(self):
+        article = Article.objects.create(
+            title="लंबे हिंदी यूआरएल वाली खबर",
+            summary="सारांश",
+            content="पूरी खबर",
+            category=self.category,
+            status="published",
+        )
+        response = self.client.get(f"/s/{article.pk}/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, article.title)
+        self.assertContains(response, f'property="og:url" content="http://testserver/s/{article.pk}/"')
+        self.assertContains(response, f'rel="canonical" href="http://testserver{article.get_absolute_url()}"')

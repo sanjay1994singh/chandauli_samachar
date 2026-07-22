@@ -16,17 +16,22 @@ from .models import Article
 def home(request):
     qs = Article.objects.filter(status="published").select_related("category", "city")
     return render(request, "news/home.html", {"featured": qs.filter(is_featured=True).first() or qs.first(), "latest": qs.order_by("-created_at", "-pk")[:9], "breaking": qs.filter(is_breaking=True).order_by("-created_at", "-pk")[:6]})
-def article_detail(request, slug):
-    article = get_object_or_404(Article.objects.select_related("category", "author", "city"), slug=slug, status="published")
-    Article.objects.filter(pk=article.pk).update(views=F("views") + 1); article.refresh_from_db(fields=["views"])
+
+
+def _render_article(request, article):
+    Article.objects.filter(pk=article.pk).update(views=F("views") + 1)
+    article.refresh_from_db(fields=["views"])
     related = Article.objects.filter(status="published", category=article.category).exclude(pk=article.pk)[:4]
-    share_url = request.build_absolute_uri(article.get_absolute_url())
-    share_image_url = request.build_absolute_uri(reverse("article_social_image", args=[article.slug]))
+    canonical_url = request.build_absolute_uri(article.get_absolute_url())
+    share_url = request.build_absolute_uri(reverse("article_share", args=[article.pk]))
+    share_image_url = request.build_absolute_uri(reverse("article_social_image", args=[article.pk]))
+    share_image_url = f"{share_image_url}?v={int(article.updated_at.timestamp())}"
     share_description = article.summary.strip() or Truncator(strip_tags(article.content)).chars(180)
-    share_text = f"{article.title} - {share_url}"
+    share_text = f"{article.title}\n{share_url}"
     return render(request, "news/detail.html", {
         "article": article,
         "related": related,
+        "canonical_url": canonical_url,
         "share_url": share_url,
         "share_image_url": share_image_url,
         "share_description": share_description,
@@ -37,8 +42,22 @@ def article_detail(request, slug):
     })
 
 
-def article_social_image(request, slug):
-    article = get_object_or_404(Article, slug=slug, status="published")
+def article_detail(request, slug):
+    article = get_object_or_404(Article.objects.select_related("category", "author", "city"), slug=slug, status="published")
+    return _render_article(request, article)
+
+
+def article_share(request, pk):
+    article = get_object_or_404(
+        Article.objects.select_related("category", "author", "city"),
+        pk=pk,
+        status="published",
+    )
+    return _render_article(request, article)
+
+
+def article_social_image(request, pk):
+    article = get_object_or_404(Article, pk=pk, status="published")
     fallback_path = settings.BASE_DIR / "static" / "img" / "social-default.jpg"
 
     try:
