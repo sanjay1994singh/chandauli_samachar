@@ -38,7 +38,6 @@ def _render_article(request, article):
         "whatsapp_share_url": "https://wa.me/?" + urlencode({"text": share_text}),
         "facebook_share_url": "https://www.facebook.com/sharer/sharer.php?" + urlencode({"u": share_url}),
         "x_share_url": "https://twitter.com/intent/tweet?" + urlencode({"url": share_url, "text": article.title}),
-        "telegram_share_url": "https://t.me/share/url?" + urlencode({"url": share_url, "text": article.title}),
     })
 
 

@@ -124,11 +124,14 @@ class AdminLanguageAndSlugTests(TestCase):
         self.assertContains(response, "https://wa.me/")
         self.assertContains(response, "facebook.com/sharer/sharer.php")
         self.assertContains(response, "twitter.com/intent/tweet")
-        self.assertContains(response, "t.me/share/url")
         self.assertContains(response, 'id="copy-share-link"')
         self.assertContains(response, f"/s/{article.pk}/")
         self.assertContains(response, f"/social/article/{article.pk}.jpg")
         self.assertEqual(response.context["share_url"], f"http://testserver/s/{article.pk}/")
+        self.assertContains(response, "share-actions{display:flex;gap:10px}")
+        self.assertEqual(response.content.decode().count('<svg viewBox="0 0 24 24"'), 4)
+        self.assertNotContains(response, "Telegram")
+        self.assertNotContains(response, 'id="native-share"')
 
     def test_social_thumbnail_is_always_1200_by_630_jpeg(self):
         article = Article.objects.create(
