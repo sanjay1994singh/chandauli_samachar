@@ -1,3 +1,6 @@
+from io import BytesIO
+
+from PIL import Image
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from category.models import Category
@@ -102,3 +105,40 @@ class AdminLanguageAndSlugTests(TestCase):
         response = self.client.get("/")
         latest_articles = list(response.context["latest"])
         self.assertEqual(latest_articles[:2], [newer, older])
+
+    def test_article_has_social_links_and_complete_metadata(self):
+        article = Article.objects.create(
+            title="सोशल मीडिया टेस्ट खबर",
+            summary="शेयर करते समय दिखाई देने वाला सारांश",
+            content="पूरी खबर",
+            category=self.category,
+            status="published",
+        )
+        response = self.client.get(article.get_absolute_url())
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'property="og:type" content="article"')
+        self.assertContains(response, 'property="og:image:width" content="1200"')
+        self.assertContains(response, 'property="og:image:height" content="630"')
+        self.assertContains(response, 'name="twitter:card" content="summary_large_image"')
+        self.assertContains(response, "https://wa.me/")
+        self.assertContains(response, "facebook.com/sharer/sharer.php")
+        self.assertContains(response, "twitter.com/intent/tweet")
+        self.assertContains(response, "t.me/share/url")
+        self.assertContains(response, 'id="copy-share-link"')
+        self.assertContains(response, "/social-image/")
+
+    def test_social_thumbnail_is_always_1200_by_630_jpeg(self):
+        article = Article.objects.create(
+            title="बिना फोटो की खबर",
+            summary="",
+            content="पूरी खबर",
+            category=self.category,
+            status="published",
+        )
+        response = self.client.get(f"{article.get_absolute_url()}social-image/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "image/jpeg")
+        image = Image.open(BytesIO(response.content))
+        self.assertEqual(image.size, (1200, 630))
