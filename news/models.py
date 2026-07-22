@@ -1,7 +1,8 @@
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
-from django.utils.text import slugify
+
+from chandauli_samachar.slugs import unique_slug
 
 
 class Article(models.Model):
@@ -32,17 +33,12 @@ class Article(models.Model):
     is_breaking = models.BooleanField(default=False); is_featured = models.BooleanField(default=False)
     views = models.PositiveIntegerField(default=0)
     published_at = models.DateTimeField(null=True, blank=True); created_at = models.DateTimeField(auto_now_add=True); updated_at = models.DateTimeField(auto_now=True)
-    class Meta: ordering = ("-published_at", "-created_at")
+    class Meta:
+        ordering = ("-created_at", "-pk", "-published_at")
     def __str__(self): return self.title
     def save(self, *args, **kwargs):
         if not self.slug:
-            base = slugify(self.title, allow_unicode=True)[:250] or "article"
-            candidate, counter = base, 2
-            while Article.objects.exclude(pk=self.pk).filter(slug=candidate).exists():
-                suffix = f"-{counter}"
-                candidate = f"{base[:270 - len(suffix)]}{suffix}"
-                counter += 1
-            self.slug = candidate
+            self.slug = unique_slug(self, self.title, fallback="article", max_length=270)
         super().save(*args, **kwargs)
     def get_absolute_url(self): return reverse("article_detail", args=[self.slug])
     @property

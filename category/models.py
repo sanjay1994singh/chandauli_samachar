@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
-from django.utils.text import slugify
+
+from chandauli_samachar.slugs import unique_slug
 
 
 class Category(models.Model):
@@ -17,12 +18,6 @@ class Category(models.Model):
     def __str__(self): return self.name
     def save(self, *args, **kwargs):
         if not self.slug:
-            base = slugify(self.name, allow_unicode=True)[:40] or "category"
-            candidate, counter = base, 2
-            while Category.objects.exclude(pk=self.pk).filter(slug=candidate).exists():
-                suffix = f"-{counter}"
-                candidate = f"{base[:50 - len(suffix)]}{suffix}"
-                counter += 1
-            self.slug = candidate
+            self.slug = unique_slug(self, self.name, fallback="category", max_length=50)
         super().save(*args, **kwargs)
     def get_absolute_url(self): return reverse("category_articles", args=[self.slug])

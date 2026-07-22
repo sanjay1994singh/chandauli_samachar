@@ -1,5 +1,6 @@
 from django.db import models
-from django.utils.text import slugify
+
+from chandauli_samachar.slugs import unique_slug
 
 
 class State(models.Model):
@@ -11,13 +12,7 @@ class State(models.Model):
     def __str__(self): return self.name
     def save(self, *args, **kwargs):
         if not self.slug:
-            base = slugify(self.name, allow_unicode=True)[:40] or "state"
-            candidate, counter = base, 2
-            while State.objects.exclude(pk=self.pk).filter(slug=candidate).exists():
-                suffix = f"-{counter}"
-                candidate = f"{base[:50 - len(suffix)]}{suffix}"
-                counter += 1
-            self.slug = candidate
+            self.slug = unique_slug(self, self.name, fallback="state", max_length=50)
         super().save(*args, **kwargs)
 
 
@@ -32,12 +27,11 @@ class City(models.Model):
     def __str__(self): return f"{self.name}, {self.state.name}"
     def save(self, *args, **kwargs):
         if not self.slug:
-            base = slugify(self.name, allow_unicode=True)[:40] or "city"
-            candidate, counter = base, 2
-            queryset = City.objects.exclude(pk=self.pk).filter(state=self.state)
-            while queryset.filter(slug=candidate).exists():
-                suffix = f"-{counter}"
-                candidate = f"{base[:50 - len(suffix)]}{suffix}"
-                counter += 1
-            self.slug = candidate
+            self.slug = unique_slug(
+                self,
+                self.name,
+                fallback="city",
+                max_length=50,
+                queryset=City.objects.filter(state=self.state),
+            )
         super().save(*args, **kwargs)
